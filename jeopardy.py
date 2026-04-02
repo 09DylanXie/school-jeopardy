@@ -1,38 +1,68 @@
 import streamlit as st
-import pd as pd
+import pandas as pd
 import time
 
-# --- 1. Custom CSS for Uniform "Blue Graph" TV Look ---
+# --- 1. Authentic Jeopardy Visual Reformat ---
 st.markdown("""
 <style>
+    /* Deep Blue Background */
     .stApp { background-color: #000033; }
+    
+    /* Category Headers: White, Bold, Condensed */
     h3 {
-        color: #FFCC00 !important;
+        color: #FFFFFF !important;
         text-align: center;
         text-transform: uppercase;
-        font-family: 'Arial Black', Gadget, sans-serif;
+        font-family: 'Arial Narrow', sans-serif;
+        font-weight: 900 !important;
         text-shadow: 2px 2px #000000;
-        min-height: 120px !important; 
+        min-height: 100px !important; 
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.1rem !important;
-        margin-bottom: 20px !important;
+        font-size: 1.4rem !important;
+        margin-bottom: 5px !important;
+        line-height: 1.1;
     }
+
+    /* Point Value Buttons: Amber/Gold with Black Drop Shadow */
     .stButton > button {
         background-color: #060ce9 !important;
-        color: #FFCC00 !important;
-        border: 3px solid #FFCC00 !important;
-        height: 100px !important;
+        color: #D4AF37 !important; /* Authentic Amber Gold */
+        border: 2px solid #000000 !important;
+        height: 110px !important;
         width: 100% !important;
-        font-size: 32px !important;
+        font-size: 42px !important; /* Larger Point Values */
+        font-family: 'Times New Roman', serif; /* Closer to the show's font */
         font-weight: bold !important;
-        border-radius: 5px !important;
+        border-radius: 0px !important; /* Sharp corners like the tiles */
+        text-shadow: 3px 3px #000000;
+        margin-bottom: -5px !important;
     }
-    .stButton > button:hover { border-color: #FFFFFF !important; color: #FFFFFF !important; }
-    .stButton > button:disabled { background-color: #000022 !important; color: #444444 !important; border: 2px solid #222222 !important; }
-    .stTabs [data-baseweb="tab-list"] { background-color: #060ce9; padding: 10px; }
+    
+    .stButton > button:hover {
+        border-color: #D4AF37 !important;
+        transform: scale(1.02);
+    }
+
+    /* Answered Tiles: Empty Dark Blue */
+    .stButton > button:disabled {
+        background-color: #000055 !important;
+        color: rgba(0,0,0,0) !important; /* Hide the X */
+        border: 2px solid #000000 !important;
+        text-shadow: none;
+    }
+
+    /* Tabs Styling */
+    .stTabs [data-baseweb="tab-list"] { background-color: #060ce9; padding: 5px; }
     .stTabs [data-baseweb="tab"] { color: white !important; font-weight: bold; }
+    
+    /* Question Display Card */
+    .stAlert {
+        background-color: #060ce9 !important;
+        border: 5px solid #FFFFFF !important;
+        color: #FFFFFF !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -118,7 +148,6 @@ with tab1:
 
     elif st.session_state.final_triggered:
         st.title("🏆 FINAL JEOPARDY")
-        st.markdown("### Category: General Knowledge")
         if not st.session_state.final_q_revealed:
             if st.button("REVEAL FINAL QUESTION", use_container_width=True):
                 st.session_state.final_q_revealed = True
@@ -142,7 +171,7 @@ with tab1:
                 for _, row in cat_qs.iterrows():
                     q_id = f"{cat}-{row['Points']}"
                     if q_id in st.session_state.answered:
-                        st.button("X", key=q_id, disabled=True)
+                        st.button("", key=q_id, disabled=True)
                     else:
                         if st.button(f"${row['Points']}", key=q_id):
                             st.session_state.current_q = row
@@ -162,7 +191,7 @@ with tab1:
             st.write("### Assign Points")
             
             if not st.session_state.players:
-                st.error("No players found! Please add players in the sidebar.")
+                st.error("No players found! Add them in the sidebar.")
             else:
                 p_names = list(st.session_state.players.keys())
                 p_cols = st.columns(len(p_names))
@@ -203,4 +232,4 @@ with tab2:
                 st.rerun()
             st.divider()
     else:
-        st.info("Add players in the sidebar to start.")
+        st.info("Add players in the sidebar.")
