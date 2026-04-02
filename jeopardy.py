@@ -2,10 +2,13 @@ import streamlit as st
 import pandas as pd
 import time
 
-# --- 1. Authentic Jeopardy Visual Reformat ---
+# --- 1. SET PAGE TO WIDE MODE (Must be first Streamlit command) ---
+st.set_page_config(layout="wide")
+
+# --- 2. Authentically Proportional Jeopardy Tiles ---
 st.markdown("""
 <style>
-    /* Deep Blue Background */
+    /* Main Background */
     .stApp { background-color: #000033; }
     
     /* Category Headers: White, Bold, Condensed */
@@ -16,28 +19,27 @@ st.markdown("""
         font-family: 'Arial Narrow', sans-serif;
         font-weight: 900 !important;
         text-shadow: 2px 2px #000000;
-        min-height: 100px !important; 
+        min-height: 80px !important; 
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.4rem !important;
+        font-size: 1.6rem !important;
         margin-bottom: 5px !important;
-        line-height: 1.1;
     }
 
-    /* Point Value Buttons: Amber/Gold with Black Drop Shadow */
+    /* THE FIX: Adjusted height to 80px for a 'wider' look */
     .stButton > button {
         background-color: #060ce9 !important;
-        color: #D4AF37 !important; /* Authentic Amber Gold */
+        color: #D4AF37 !important; 
         border: 2px solid #000000 !important;
-        height: 110px !important;
+        height: 85px !important; 
         width: 100% !important;
-        font-size: 42px !important; /* Larger Point Values */
-        font-family: 'Times New Roman', serif; /* Closer to the show's font */
+        font-size: 38px !important; 
+        font-family: 'Times New Roman', serif;
         font-weight: bold !important;
-        border-radius: 0px !important; /* Sharp corners like the tiles */
+        border-radius: 0px !important;
         text-shadow: 3px 3px #000000;
-        margin-bottom: -5px !important;
+        margin-top: 5px !important;
     }
     
     .stButton > button:hover {
@@ -45,28 +47,24 @@ st.markdown("""
         transform: scale(1.02);
     }
 
-    /* Answered Tiles: Empty Dark Blue */
+    /* Empty Tiles */
     .stButton > button:disabled {
         background-color: #000055 !important;
-        color: rgba(0,0,0,0) !important; /* Hide the X */
         border: 2px solid #000000 !important;
-        text-shadow: none;
     }
 
     /* Tabs Styling */
     .stTabs [data-baseweb="tab-list"] { background-color: #060ce9; padding: 5px; }
     .stTabs [data-baseweb="tab"] { color: white !important; font-weight: bold; }
     
-    /* Question Display Card */
-    .stAlert {
-        background-color: #060ce9 !important;
-        border: 5px solid #FFFFFF !important;
-        color: #FFFFFF !important;
+    /* Remove column padding to make tiles closer together */
+    [data-testid="column"] {
+        padding: 0px 5px !important;
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- 2. Load School Edition Data ---
+# --- 3. Load Data ---
 @st.cache_data
 def load_data():
     return pd.DataFrame([
@@ -105,7 +103,7 @@ def load_data():
 df = load_data()
 categories = df['Category'].unique()
 
-# --- 3. Session State ---
+# --- 4. Session State ---
 if "players" not in st.session_state:
     st.session_state.update({
         "players": {}, "answered": [], "current_q": None, 
@@ -113,7 +111,7 @@ if "players" not in st.session_state:
         "final_q_revealed": False, "final_a_revealed": False, "winner": None
     })
 
-# --- 4. Sidebar ---
+# --- 5. Sidebar ---
 with st.sidebar:
     st.title("Host Admin")
     new_p = st.text_input("Player Name")
@@ -135,7 +133,7 @@ with st.sidebar:
         st.session_state.clear()
         st.rerun()
 
-# --- 5. Tabs ---
+# --- 6. Tabs ---
 tab1, tab2 = st.tabs(["🎮 GAME BOARD", "🏆 LEADERBOARD"])
 
 with tab1:
@@ -163,6 +161,7 @@ with tab1:
                 st.balloons()
     
     elif st.session_state.current_q is None:
+        # Columns will now stretch to full page width
         cols = st.columns(len(categories))
         for i, cat in enumerate(categories):
             with cols[i]:
@@ -212,7 +211,7 @@ with tab1:
                             time.sleep(1)
                             st.rerun()
             
-            if st.button("Skip Question"):
+            if st.button("Skip Question", use_container_width=True):
                 st.session_state.answered.append(f"{q['Category']}-{q['Points']}")
                 st.session_state.current_q, st.session_state.show_answer = None, False
                 st.rerun()
