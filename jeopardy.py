@@ -2,44 +2,58 @@ import streamlit as st
 import pandas as pd
 import time
 
-# --- 1. SET PAGE TO WIDE MODE (Must be first Streamlit command) ---
+# --- 1. SET PAGE TO WIDE MODE (Must be the first Streamlit command) ---
 st.set_page_config(layout="wide")
 
-# --- 2. Authentically Proportional Jeopardy Tiles ---
+# --- 2. THE IRON-CLAD CENTERING & CINEMATIC TILE CSS ---
 st.markdown("""
 <style>
-    /* Main Background */
     .stApp { background-color: #000033; }
     
-    /* Category Headers: White, Bold, Condensed */
+    /* Force the column containers to center everything inside them */
+    [data-testid="column"] {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: flex-start !important;
+        text-align: center !important;
+        padding: 0px 12px !important;
+    }
+
+    /* Category Headers: Centered and Powerful */
     h3 {
         color: #FFFFFF !important;
-        text-align: center;
         text-transform: uppercase;
         font-family: 'Arial Narrow', sans-serif;
         font-weight: 900 !important;
         text-shadow: 2px 2px #000000;
+        
+        /* Centering Logic within the H3 block */
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        
         min-height: 80px !important; 
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.6rem !important;
-        margin-bottom: 5px !important;
+        font-size: 2.2rem !important; 
+        line-height: 1.1;
+        margin-bottom: 15px !important;
     }
 
-    /* THE FIX: Adjusted height to 80px for a 'wider' look */
-    .stButton > button {
+    /* Wide Proportional Tiles */
+    div.stButton > button {
         background-color: #060ce9 !important;
         color: #D4AF37 !important; 
         border: 2px solid #000000 !important;
-        height: 85px !important; 
         width: 100% !important;
-        font-size: 38px !important; 
+        min-width: 200px !important; 
+        height: 90px !important; 
+        font-size: 45px !important; 
         font-family: 'Times New Roman', serif;
         font-weight: bold !important;
         border-radius: 0px !important;
         text-shadow: 3px 3px #000000;
-        margin-top: 5px !important;
+        margin: 4px 0px !important;
     }
     
     .stButton > button:hover {
@@ -47,24 +61,23 @@ st.markdown("""
         transform: scale(1.02);
     }
 
-    /* Empty Tiles */
+    /* Disabled Tiles (Answered) */
     .stButton > button:disabled {
         background-color: #000055 !important;
+        color: rgba(0,0,0,0) !important;
         border: 2px solid #000000 !important;
     }
 
-    /* Tabs Styling */
+    /* Tabs and UI Clean-up */
     .stTabs [data-baseweb="tab-list"] { background-color: #060ce9; padding: 5px; }
     .stTabs [data-baseweb="tab"] { color: white !important; font-weight: bold; }
-    
-    /* Remove column padding to make tiles closer together */
-    [data-testid="column"] {
-        padding: 0px 5px !important;
-    }
+
+    /* Hide Streamlit Branding */
+    #MainMenu, footer, header {visibility: hidden;}
 </style>
 """, unsafe_allow_html=True)
 
-# --- 3. Load Data ---
+# --- 3. Load School Edition Data [cite: 1] ---
 @st.cache_data
 def load_data():
     return pd.DataFrame([
@@ -133,7 +146,7 @@ with st.sidebar:
         st.session_state.clear()
         st.rerun()
 
-# --- 6. Tabs ---
+# --- 6. Main UI ---
 tab1, tab2 = st.tabs(["🎮 GAME BOARD", "🏆 LEADERBOARD"])
 
 with tab1:
@@ -151,17 +164,16 @@ with tab1:
                 st.session_state.final_q_revealed = True
                 st.rerun()
         if st.session_state.final_q_revealed:
-            st.warning("### What is a u-boat?")
+            st.warning("### What is a u-boat? [cite: 1]")
             if not st.session_state.final_a_revealed:
                 if st.button("REVEAL FINAL ANSWER"):
                     st.session_state.final_a_revealed = True
                     st.rerun()
             if st.session_state.final_a_revealed:
-                st.success("### Answer: What is a German submarine?")
+                st.success("### Answer: What is a German submarine? [cite: 1]")
                 st.balloons()
     
     elif st.session_state.current_q is None:
-        # Columns will now stretch to full page width
         cols = st.columns(len(categories))
         for i, cat in enumerate(categories):
             with cols[i]:
